@@ -158,6 +158,7 @@ int main(int argc, char** argv)
             }
             maneuver_navigator.reinitPlanner(new_footprint);  // Dynamic reconfigurationdid not work so we had to do it in two ways. The localcostmap
             // was updated directly with functins, and the tebplanner by setting firts the parameters and then reloading the planner
+            n.setParam("is_load_attached", true);
 
         }           
         
@@ -181,6 +182,7 @@ int main(int argc, char** argv)
             }
             maneuver_navigator.reinitPlanner(new_footprint);  // Dynamic reconfigurationdid not work so we had to do it in two ways. The localcostmap
             // was updated directly with functins, and the tebplanner by setting first the parameters and then reloading the planner            
+            n.setParam("is_load_attached", false);
         }
         
         if(cancel_nav)
