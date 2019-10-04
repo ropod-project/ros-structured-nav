@@ -55,6 +55,12 @@ void loadAttachedCallback(const std_msgs::Bool::ConstPtr& load_attached_msg)
         reinit_planner_noload = true;
 }
 
+bool clear_costmap = false;
+void clearCostmapCallback(const std_msgs::Bool::ConstPtr& msg)
+{
+    clear_costmap = true;
+}
+
 
 int main(int argc, char** argv)
 {
@@ -63,6 +69,7 @@ int main(int argc, char** argv)
     
     double prediction_feasibility_check_rate, prediction_feasibility_check_period, prediction_feasibility_check_cycle_time = 0.0;
     double local_navigation_rate, local_navigation_period;    
+    double manuever_nav_timeout_duration;
     
     std::string default_ropod_navigation_param_file;
     std::string default_ropod_load_navigation_param_file;
@@ -70,6 +77,7 @@ int main(int argc, char** argv)
 
     n.param<double>("prediction_feasibility_check_rate", prediction_feasibility_check_rate, 3.0);    
     n.param<double>("local_navigation_rate", local_navigation_rate, 10.0); // local_navigation_rate>prediction_feasibility_check_rate    
+    n.param<double>("maneuver_nav_timeout_duration", manuever_nav_timeout_duration, 10.0);
     n.param<std::string>("default_ropod_navigation_param_file", default_ropod_navigation_param_file, 
                          std::string("") ); 
 //                          std::string("~/ropod-project-software/catkin_workspace/src/functionalities/ros_structured_nav/maneuver_navigation/config/footprint_local_planner_params_ropod.yaml") ); 
@@ -86,13 +94,14 @@ int main(int argc, char** argv)
     ros::Subscriber mn_sendGoal_pub_ = n.subscribe<maneuver_navigation::Goal> ("/route_navigation/goal", 10,goalCallback);
     ros::Subscriber cancel_cmd_sub = n.subscribe<std_msgs::Bool>("/route_navigation/cancel", 10, cancelCallback);
     ros::Subscriber reinit_planner_sub = n.subscribe<std_msgs::Bool>("/route_navigation/set_load_attached", 10, loadAttachedCallback);
+    ros::Subscriber clear_costmap_sub = n.subscribe<std_msgs::Bool>("/route_navigation/clear_costmap", 1, clearCostmapCallback);
    // ros::Publisher  reinit_localcostmap_footprint_sub = n.advertise<geometry_msgs::Polygon>("/maneuver_navigation/local_costmap/footprint", 1);
     ros::Publisher  goal_visualisation_pub_ = n.advertise<geometry_msgs::PoseStamped>("/maneuver_navigation/goal_rviz", 1);
     ros::Publisher feedback_pub_ = n.advertise<maneuver_navigation::Feedback>("/route_navigation/feedback", 1);
         
 //     /move_base_simple/goal
     tf::TransformListener tf( ros::Duration(10) );
-    mn::ManeuverNavigation maneuver_navigator(tf,n);
+    mn::ManeuverNavigation maneuver_navigator(tf,n, manuever_nav_timeout_duration);
     maneuver_navigator.init();
 
 
@@ -189,6 +198,12 @@ int main(int argc, char** argv)
         {
             cancel_nav = false;
             maneuver_navigator.cancel();
+        }
+
+        if (clear_costmap)
+        {
+            clear_costmap = false;
+            maneuver_navigator.clearCostmaps();
         }
 
         ros::spinOnce();

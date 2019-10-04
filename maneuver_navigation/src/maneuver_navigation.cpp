@@ -2,12 +2,12 @@
 
 namespace mn
 {
-ManeuverNavigation::ManeuverNavigation(tf::TransformListener& tf, ros::NodeHandle& nh) :
+ManeuverNavigation::ManeuverNavigation(tf::TransformListener& tf, ros::NodeHandle& nh, double timeout_duration) :
 tf_(tf), nh_(nh), blp_loader_("nav_core", "nav_core::BaseLocalPlanner")
 {    
     
     initialized_ = false;
-    timeout_duration_ = ros::Duration(5.0);
+    timeout_duration_ = ros::Duration(timeout_duration);
     timer_running_ = false;
 };
 
@@ -77,6 +77,11 @@ void ManeuverNavigation::init()
     initialized_ = true;
 
 };
+
+void ManeuverNavigation::clearCostmaps()
+{
+    costmap_ros_->resetLayers();
+}
 
 void ManeuverNavigation::reinitPlanner(const geometry_msgs::Polygon& new_footprint) 
 {      
