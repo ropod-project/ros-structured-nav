@@ -48,11 +48,12 @@ public:
 
     
 
-    ManeuverNavigation(tf::TransformListener& tf, ros::NodeHandle& nh);
+    ManeuverNavigation(tf::TransformListener& tf, ros::NodeHandle& nh, double timeout_duration);
 
     ~ManeuverNavigation();
 
     void init();
+    void clearCostmaps();
     void reinitPlanner(const geometry_msgs::Polygon& new_footprint);
     bool isGoalReachable();
     void cancel() ;
