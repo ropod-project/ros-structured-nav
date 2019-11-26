@@ -352,7 +352,17 @@ void ManeuverNavigation::callLocalNavigationStateMachine()
 
 bool ManeuverNavigation::getRobotPose(tf::Stamped<tf::Pose> & global_pose) 
 {
-    if(!costmap_ros_->getRobotPose(global_pose))
+    bool got_pose = false;
+    for (int i = 0; i < 3; i++)
+    {
+        if(costmap_ros_->getRobotPose(global_pose))
+        {
+            got_pose = true;
+            break;
+        }
+    }
+
+    if(!got_pose)
     {
         ROS_ERROR("maneuver_navigation cannot make a plan for you because it could not get the start pose of the robot");
         publishZeroVelocity();        
@@ -437,6 +447,8 @@ maneuver_navigation::Feedback ManeuverNavigation::callManeuverNavigationStateMac
                 if (!timer_running_)
                 {
                     startTimeoutTimer();
+                    ROS_WARN("Clearing costmaps");
+                    clearCostmaps();
                 }
                 else if (isTimeoutReached())
                 {
