@@ -70,6 +70,7 @@ int main(int argc, char** argv)
     double prediction_feasibility_check_rate, prediction_feasibility_check_period, prediction_feasibility_check_cycle_time = 0.0;
     double local_navigation_rate, local_navigation_period;    
     double manuever_nav_timeout_duration;
+    double min_velocity =  0.03; // [m/s]
     
     std::string default_ropod_navigation_param_file;
     std::string default_ropod_load_navigation_param_file;
@@ -84,7 +85,7 @@ int main(int argc, char** argv)
     n.param<std::string>("default_ropod_load_navigation_param_file", default_ropod_load_navigation_param_file, 
                          std::string("") ); 
 //                          std::string("~/ropod-project-software/catkin_workspace/src/functionalities/ros_structured_nav/maneuver_navigation/config/footprint_local_planner_params_ropod_load.yaml") ); 
-    
+    n.param<double>("min_velocity", min_velocity, min_velocity); 
     
     ros::Rate rate(local_navigation_rate);
     prediction_feasibility_check_period = 1.0/prediction_feasibility_check_rate;
@@ -102,6 +103,7 @@ int main(int argc, char** argv)
 //     /move_base_simple/goal
     tf::TransformListener tf( ros::Duration(10) );
     mn::ManeuverNavigation maneuver_navigator(tf,n, manuever_nav_timeout_duration);
+    maneuver_navigator.min_velocity = min_velocity;
     maneuver_navigator.init();
 
 
