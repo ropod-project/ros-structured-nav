@@ -321,6 +321,10 @@ void ManeuverNavigation::callLocalNavigationStateMachine()
             else if(local_planner_->computeVelocityCommands(cmd_vel))
             {
                 //make sure that we send the velocity command to the base
+                double min_velocity = 0.1; // [m/s]; The platform controller cannot hnadle low velocities well. 
+                if((cmd_vel.linear.x > 0) && (cmd_vel.linear.x < min_velocity)) { // for the time being only positive x
+                  cmd_vel.linear.x = min_velocity;
+                }
                 vel_pub_.publish(cmd_vel);
                 local_plan_infeasible_ = false;
             }
