@@ -9,6 +9,7 @@ tf_(tf), nh_(nh), blp_loader_("nav_core", "nav_core::BaseLocalPlanner")
     initialized_ = false;
     timeout_duration_ = ros::Duration(timeout_duration);
     timer_running_ = false;
+    min_velocity = 0.03; // [m/s]; The platform controller cannot hnadle low velocities well.
 };
 
 
@@ -320,8 +321,7 @@ void ManeuverNavigation::callLocalNavigationStateMachine()
             }
             else if(local_planner_->computeVelocityCommands(cmd_vel))
             {
-                //make sure that we send the velocity command to the base
-                double min_velocity = 0.1; // [m/s]; The platform controller cannot hnadle low velocities well. 
+                //make sure that we send the velocity command to the base 
                 if((cmd_vel.linear.x > 0) && (cmd_vel.linear.x < min_velocity)) { // for the time being only positive x
                   cmd_vel.linear.x = min_velocity;
                 }

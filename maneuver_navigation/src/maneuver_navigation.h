@@ -75,6 +75,8 @@ public:
    costmap_2d::Costmap2DROS* costmap_ros_, * local_costmap_ros;
    costmap_2d::Costmap2D* costmap_;
    base_local_planner::WorldModel* world_model_; ///< @brief The world model that the controller will use  
+    
+   double min_velocity; // [m/s]; The platform controller cannot hnadle low velocities well.
       
 private:      
    double MAX_AHEAD_DIST_BEFORE_REPLANNING;     // TODO: make static const?
