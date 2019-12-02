@@ -139,8 +139,7 @@ int main(int argc, char** argv)
         {
             prediction_feasibility_check_cycle_time = 0.0;
             maneuver_navigation::Feedback feedback = maneuver_navigator.callManeuverNavigationStateMachine();
-            if (feedback.status != maneuver_navigation::Feedback::BUSY &&
-                feedback.status != maneuver_navigation::Feedback::IDLE)
+            if (feedback.status != maneuver_navigation::Feedback::IDLE)
             {
                 feedback_pub_.publish(feedback);
             }
