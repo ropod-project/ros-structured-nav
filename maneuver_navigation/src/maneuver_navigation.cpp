@@ -145,6 +145,7 @@ bool ManeuverNavigation:: gotoGoal(const geometry_msgs::PoseStamped& goal)
     mn_goal_.conf.use_line_planner = false;
     manv_nav_state_ = MANV_NAV_MAKE_INIT_PLAN;    
     local_nav_state_ = LOC_NAV_IDLE;
+    plan.clear();
     return true; // TODO: implement
 
 };
@@ -156,6 +157,7 @@ bool ManeuverNavigation:: gotoGoal(const maneuver_navigation::Goal& goal)
     append_new_maneuver_ = mn_goal_.conf.append_new_maneuver;
     manv_nav_state_ = MANV_NAV_MAKE_INIT_PLAN;    
     local_nav_state_ = LOC_NAV_IDLE;
+    plan.clear();
     return true; // TODO: implement
 
 };
@@ -423,6 +425,7 @@ maneuver_navigation::Feedback ManeuverNavigation::callManeuverNavigationStateMac
             }
             else
             {
+                plan.clear();
                 goal_free_ = maneuver_planner.makePlan(start,goal_, plan, dist_before_obs, mn_goal_.conf.use_line_planner);
             }
             std::cout << "Navigation: dist_before_obs " << dist_before_obs << std::endl; 
